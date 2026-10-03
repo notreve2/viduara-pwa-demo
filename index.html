@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0d12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Viduara">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Viduara PWA</title>
+<style>
+:root{--bg:#0b0d12;--panel:#141923;--line:#2a3240;--text:#f6f7fb;--muted:#9aa7b7;--accent:#8dffb5;--blue:#8ab4ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:10px 12px;background:#0f1218;border-bottom:1px solid var(--line)}
+.brand{font-weight:900;font-size:18px}.spacer{flex:1}.btn{border:1px solid var(--line);background:#1a202b;color:var(--text);padding:10px 12px;border-radius:11px}.btn.primary{background:var(--accent);color:#06170c;border:0;font-weight:850}
+main{max-width:1100px;margin:auto;padding:12px;display:grid;grid-template-columns:320px 1fr;gap:12px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+.stage{min-height:480px;background:#05070a;border:1px solid var(--line);border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.stage video,.stage img{max-width:100%;max-height:70vh;object-fit:contain;transform-origin:center;transition:filter .2s}
+.empty{color:#6d798b;text-align:center;padding:24px}.field{display:grid;gap:6px;margin-bottom:12px}.field label{font-size:11px;color:var(--muted)}
+textarea,input,select{width:100%;border:1px solid var(--line);background:#0e1218;color:var(--text);border-radius:10px;padding:10px;font:inherit}textarea{min-height:110px;resize:vertical}
+.card{border:1px solid var(--line);background:#10141b;border-radius:13px;padding:12px;margin-top:10px}.muted{color:var(--muted);font-size:12px}.plan{display:grid;gap:7px;margin-top:8px}.step{padding:9px;border-radius:10px;background:#192130;border-left:3px solid var(--blue)}
+.timeline{margin-top:12px;display:flex;gap:6px;overflow:auto}.chip{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#1b2534;white-space:nowrap}.chip.active{border-color:var(--accent)}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:50;max-width:600px;margin:auto;background:#18202c;border:1px solid #334155;border-radius:14px;padding:12px;display:none}
+@media(max-width:760px){main{grid-template-columns:1fr}.stage{min-height:42vh}.hideSmall{display:none}header{gap:6px}.btn{padding:9px 10px}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">Viduara <span style="font-weight:500;color:var(--muted)">PWA</span></div>
+<div class="spacer"></div>
+<button class="btn" id="installBtn">⬇ Instalar</button>
+<button class="btn primary" id="importBtn">＋ Mídia</button>
+<input id="file" type="file" accept="video/*,image/*" multiple hidden>
+</header>
+<main>
+<section>
+<div class="panel">
+<h3 style="margin-top:0">Diretor por Texto</h3>
+<div class="muted">Selecione uma mídia e descreva a edição. O demo converte sua frase em um plano e aplica os efeitos locais suportados.</div>
+<div class="field" style="margin-top:12px"><label>Comando</label><textarea id="prompt" placeholder="Ex.: faça eu voar para o canto superior direito, dê zoom cinematográfico e motion blur"></textarea></div>
+<button class="btn primary" id="applyBtn" style="width:100%">✦ Aplicar comando</button>
+<div id="plan" class="plan"></div>
+</div>
+<div class="panel" style="margin-top:12px">
+<h3 style="margin-top:0">Foto</h3>
+<div class="muted">Melhoria local em 1 toque: upscale, contraste, saturação e nitidez suave. 0 créditos no demo.</div>
+<button class="btn" id="enhanceBtn" style="width:100%;margin-top:10px">✨ Melhorar Foto 1‑Tap</button>
+</div>
+<div class="panel" style="margin-top:12px">
+<h3 style="margin-top:0">Ajustes</h3>
+<div class="field"><label>Escala</label><input id="scale" type="range" min=".5" max="2.5" step=".05" value="1"></div>
+<div class="field"><label>Rotação</label><input id="rotation" type="range" min="-180" max="180" step="1" value="0"></div>
+<div class="field"><label>X</label><input id="x" type="range" min="0" max="100" value="50"></div>
+<div class="field"><label>Y</label><input id="y" type="range" min="0" max="100" value="50"></div>
+<div class="field"><label>Look</label><select id="look"><option value="normal">Normal</option><option value="cinema">Cinematográfico</option><option value="vivid">Vibrante</option><option value="mono">P&B</option></select></div>
+</div>
+</section>
+<section>
+<div class="stage" id="stage"><div class="empty" id="empty"><b>Importe uma foto ou vídeo</b><br>Depois teste o Diretor por Texto.</div></div>
+<div class="timeline" id="timeline"></div>
+<div class="card"><b>Modo PWA de teste</b><div class="muted">Instala como app no iPhone/Android e funciona offline depois do primeiro carregamento. Renderização/exportação profissional completa e IA em nuvem continuam no app nativo/backend.</div></div>
+</section>
+</main>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
