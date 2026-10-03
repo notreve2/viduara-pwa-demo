@@ -1,0 +1,22 @@
+{
+  "id": "./",
+  "name": "Viduara Studio",
+  "short_name": "Viduara",
+  "description": "Demo instalável do editor de vídeo e foto Viduara com Diretor por Texto e melhoria de foto em um toque.",
+  "lang": "pt-BR",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
+  "prefer_related_applications": false,
+  "categories": ["photo","video","productivity"],
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Diretor por Texto","short_name":"Diretor","url":"./?director=1","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"}]}
+  ]
+}
